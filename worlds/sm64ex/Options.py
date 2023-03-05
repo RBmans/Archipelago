@@ -3,7 +3,8 @@ from Options import Option, DefaultOnToggle, Range, Toggle, DeathLink, Choice
 
 
 class EnableCoinStars(DefaultOnToggle):
-    """Disable to Ignore 100 Coin Stars. You can still collect them, but they don't do anything"""
+    """Disable to Ignore 100 Coin Stars. You can still collect them, but they don't do anything.
+    Removes 10 stars from the pool."""
     display_name = "Enable 100 Coin Stars"
 
 
@@ -62,7 +63,8 @@ class StarsToFinish(Range):
 
 
 class AmountOfStars(Range):
-    """How many stars exist. Disabling 100 Coin Stars removes 15 from the Pool. At least max of any Cost set"""
+    """How many stars exist. Disabling 100 Coin Stars removes 15 from the Pool and randomizing Moves removes 10 from the Pool.
+     At least max of any Cost set"""
     range_start = 35
     range_end = 120
     default = 120
@@ -94,6 +96,17 @@ class ProgressiveKeys(DefaultOnToggle):
     display_name = "Progressive Keys"
 
 
+class RandomizeMoves(Toggle):
+    """Mario starts with the ability to jump, punch, and swim, and must unlock all of his other moves.
+    Removes 10 stars from the Pool."""
+    display_name = "Randomize Moves"
+
+
+class StrictMoveRequirements(Toggle):
+    """If disabled, Stars that expect certain moves may have to be acquired without them. Only makes a difference
+    if Move Randomization is enabled"""
+
+
 sm64_options: typing.Dict[str, type(Option)] = {
     "AreaRandomizer": AreaRandomizer,
     "ProgressiveKeys": ProgressiveKeys,
@@ -110,4 +123,6 @@ sm64_options: typing.Dict[str, type(Option)] = {
     "death_link": DeathLink,
     "BuddyChecks": BuddyChecks,
     "ExclamationBoxes": ExclamationBoxes,
+    "RandomizeMoves": RandomizeMoves,
+    "StrictMoveRequirements": StrictMoveRequirements
 }

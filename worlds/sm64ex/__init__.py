@@ -1,7 +1,7 @@
 import typing
 import os
 import json
-from .Items import item_table, cannon_item_table, SM64Item
+from .Items import item_table, action_item_table, cannon_item_table, SM64Item
 from .Locations import location_table, SM64Location
 from .Options import sm64_options
 from .Rules import set_rules
@@ -74,13 +74,23 @@ class SM64World(World):
     def generate_basic(self):
         starcount = self.multiworld.AmountOfStars[self.player].value
         if (not self.multiworld.EnableCoinStars[self.player].value):
-            starcount = max(35,self.multiworld.AmountOfStars[self.player].value-15)
-        starcount = max(starcount, self.multiworld.FirstBowserStarDoorCost[self.player].value,
+            starcount -= 15
+        if (self.multiworld.RandomizeMoves[self.player].value):
+            starcount -= 10
+            self.multiworld.itempool += [self.create_item(action) for action in action_item_table.keys()]
+        starcount = max(starcount, 35,
+                        self.multiworld.FirstBowserStarDoorCost[self.player].value,
                         self.multiworld.BasementStarDoorCost[self.player].value, self.multiworld.SecondFloorStarDoorCost[self.player].value,
                         self.multiworld.MIPS1Cost[self.player].value, self.multiworld.MIPS2Cost[self.player].value,
-                        self.multiworld.StarsToFinish[self.player].value)
+                        self.multiworld.StarsToFinish[self.player].value,)
         self.multiworld.itempool += [self.create_item("Power Star") for i in range(0,starcount)]
-        self.multiworld.itempool += [self.create_item("1Up Mushroom") for i in range(starcount,120 - (15 if not self.multiworld.EnableCoinStars[self.player].value else 0))]
+        filler_count = 120 - starcount
+        if (not self.multiworld.EnableCoinStars[self.player].value):
+            filler_count -= 15
+        if (self.multiworld.RandomizeMoves[self.player].value):
+            filler_count -= 10
+        if filler_count > 0:
+            self.multiworld.itempool += [self.create_item("1Up Mushroom") for i in range(filler_count)]
 
         if (not self.multiworld.ProgressiveKeys[self.player].value):
             key1 = self.create_item("Basement Key")
@@ -153,6 +163,7 @@ class SM64World(World):
             "MIPS1Cost": self.multiworld.MIPS1Cost[self.player].value,
             "MIPS2Cost": self.multiworld.MIPS2Cost[self.player].value,
             "StarsToFinish": self.multiworld.StarsToFinish[self.player].value,
+            "RandomizeMoves": self.multiworld.RandomizeMoves[self.player].value,
             "DeathLink": self.multiworld.death_link[self.player].value,
         }
 
