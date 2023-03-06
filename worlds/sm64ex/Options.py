@@ -4,7 +4,7 @@ from Options import Option, DefaultOnToggle, Range, Toggle, DeathLink, Choice
 
 class EnableCoinStars(DefaultOnToggle):
     """Disable to Ignore 100 Coin Stars. You can still collect them, but they don't do anything.
-    Removes 10 stars from the pool."""
+    Removes 15 stars from the pool."""
     display_name = "Enable 100 Coin Stars"
 
 
