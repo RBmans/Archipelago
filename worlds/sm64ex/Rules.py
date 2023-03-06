@@ -133,7 +133,7 @@ def set_rules(world, player: int, area_connections):
         def can_reach_bob_island(state):
             # Either flying to the island, or long jumping to it
             return state.has("Wing Cap", player) and state.has_any({"Triple Jump", "Cannon Unlock BoB"}, player) \
-                or not world.StrictCannonRequirements[player] and not world.StrictCapRequirements[player] and state.has("Long Jump")
+                or not world.StrictCannonRequirements[player] and not world.StrictCapRequirements[player] and state.has("Long Jump", player)
         set_rule(world.get_location("BoB: Shoot to the Island in the Sky", player), lambda state: can_reach_bob_island(state))
         set_rule(world.get_location("BoB: Find the 8 Red Coins", player), lambda state: can_reach_bob_island(state))
         # Whomp's Fortress
@@ -145,6 +145,9 @@ def set_rules(world, player: int, area_connections):
         # Jolly Roger Bay
         add_rule(world.get_location("JRB: Red Coins on the Ship Afloat", player),
                  lambda state: state.has("Climb", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip"}, player))
+        set_rule(world.get_location("JRB: Through the Jet Stream", player),
+                 lambda state: not world.StrictCapRequirements[player] or state.has("Metal Cap", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip"}, player))
+
         # Big Boo's Haunt
         add_rule(world.get_location("BBH: Secret of the Haunted Books", player),
                  lambda state: state.has("Triple Jump", player) or state.has_all({"Side Flip", "Dive"}, player)
@@ -192,12 +195,10 @@ def set_rules(world, player: int, area_connections):
         # Tall, Tall Mountain
         add_rule(world.get_location("TTM: Scale the Mountain", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
         add_rule(world.get_location("TTM: Mystery of the Monkey Cage", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
-        add_rule(world.get_location("TTM: Scary 'Shrooms, Red Coins", player), lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))
         add_rule(world.get_location("TTM: Mysterious Mountainside", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
         add_rule(world.get_location("TTM: Breathtaking View from Bridge", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
         add_rule(world.get_location("TTM: Blast to the Lonely Mushroom", player), lambda state: state.has("Long Jump", player))
-        add_rule(world.get_location("TTM: Bob-omb Buddy", player), lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))
-        add_rule(world.get_location("TTM: 1Up Block on Red Mushroom", player), lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))
+
         # Tiny-Huge Island
         add_rule(world.get_location("THI: Pluck the Piranha Flower", player), lambda state: state.has_any({"Long Jump", "Ledge Grab"}, player))
         add_rule(world.get_location("THI: The Tip Top of the Huge Island", player),
@@ -250,14 +251,13 @@ def set_rules(world, player: int, area_connections):
         add_rule(world.get_location("Vanish Cap Under the Moat Red Coins", player),
                  lambda state: state.has_any({"Triple Jump", "Side Flip", "Backflip", "Ledge Grab"}, player) and (
                      state.has("Vanish Cap", player) or
-                     not world.StrictCapRequirements[player] and state.has("Wall Kick"), player))
+                     not world.StrictCapRequirements[player] and state.has("Wall Kick", player)))
         if world.EnableCoinStars[player]:
             add_rule(world.get_location("BoB: 100 Coins", player), lambda state: can_reach_bob_island(state))
             add_rule(world.get_location("JRB: 100 Coins", player),
                      lambda state: state.has("Ground Pound", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip"}, player))
-            add_rule(world.get_location("BBH: 100 Coins", player),
-                     lambda state: state.has_any({"Ground Pound", "Kick"}, player) and (state.has("Wall Kick", player) or state.has_all({"Triple Jump", "Ledge Grab"}, player)))
             add_rule(world.get_location("HMC: 100 Coins", player), lambda state: state.has_all({"Climb", "Triple Jump", "Ground Pound"}, player))
+            add_rule(world.get_location("SSL: 100 Coins", player), lambda state: state.has_any({"Climb", "Ground Pound"}, player))
             add_rule(world.get_location("DDD: 100 Coins", player), lambda state: state.has_all({"Climb", "Ground Pound"}, player))
             add_rule(world.get_location("WDW: 100 Coins", player),
                      lambda state: state.has("Ground Pound", player) and state.has_any({"Wall Kick", "Triple Jump", "Side Flip", "Backflip"}, player))
@@ -283,9 +283,15 @@ def set_rules(world, player: int, area_connections):
                      lambda state: state.has("Climb", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip", "Ledge Grab"}, player))  # Enter from top of pyramid
             add_rule(world.get_location("SSL: Pyramid Puzzle", player),
                      lambda state: state.has("Climb", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip", "Ledge Grab"}, player))  # Enter from top of pyramid
+            add_rule(world.get_location("TTM: Scary 'Shrooms, Red Coins", player),
+                     lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))  # Crazed Crate over the first gap
+            add_rule(world.get_location("TTM: Bob-omb Buddy", player),
+                     lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))  # Crazed Crate over the first gap
+            add_rule(world.get_location("TTM: 1Up Block on Red Mushroom", player),
+                     lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))  # Crazed Crate over the first gap
             set_rule(world.get_location("SL: In the Deep Freeze", player), lambda state: state.has_any({"Backflip", "Side Flip", "Wall Kick"}, player))
             add_rule(world.get_location("Vanish Cap Under the Moat Switch", player),
-                     lambda state: state.has_any({"Wall Kick", "Triple Jump", "Side Flip", "Backflip", "Ledge Grab"}, player))
+                     lambda state: state.has_any({"Wall Kick", "Triple Jump", "Side Flip", "Backflip", "Ledge Grab"}, player))  # Jumping over the ledge from the start
             if world.EnableCoinStars[player]:
                 add_rule(world.get_location("JRB: 100 Coins", player), lambda state: state.has("Climb", player))  # Brings available coin count from 102 to 104
                 add_rule(world.get_location("WF: 100 Coins", player), lambda state: state.has("Ground Pound", player))  # Stomp on Whomps for coins
