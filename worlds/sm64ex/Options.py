@@ -102,7 +102,7 @@ class RandomizeMoves(Toggle):
     display_name = "Randomize Moves"
 
 
-class StrictMoveRequirements(Toggle):
+class StrictMoveRequirements(DefaultOnToggle):
     """If disabled, Stars that expect certain moves may have to be acquired without them. Only makes a difference
     if Move Randomization is enabled"""
 
