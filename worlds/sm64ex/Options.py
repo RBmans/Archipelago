@@ -105,6 +105,7 @@ class RandomizeMoves(Toggle):
 class StrictMoveRequirements(DefaultOnToggle):
     """If disabled, Stars that expect certain moves may have to be acquired without them. Only makes a difference
     if Move Randomization is enabled"""
+    display_name = "Strict Move Requirements"
 
 
 sm64_options: typing.Dict[str, type(Option)] = {

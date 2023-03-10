@@ -1,5 +1,10 @@
+from typing import Callable, Union
+
+from BaseClasses import MultiWorld
 from ..generic.Rules import add_rule, set_rule
+from .Locations import location_table
 from .Regions import connect_regions, sm64courses, sm64paintings, sm64secrets, sm64entrances
+from .Items import action_item_table
 
 def fix_reg(entrance_ids, reg, invalidspot, swaplist, world):
     if entrance_ids.index(reg) == invalidspot: # Unlucky :C
@@ -90,216 +95,103 @@ def set_rules(world, player: int, area_connections):
         connect_regions(world, player, "Third Floor", sm64courses[temp_assign[23]]) # WMOTR
     connect_regions(world, player, "Third Floor", "Bowser in the Sky", lambda state: state.has("Power Star", player, world.StarsToFinish[player].value)) # BITS
 
-    #Special Rules for some Locations
-    add_rule(world.get_location("BoB: Mario Wings to the Sky", player), lambda state: state.has("Cannon Unlock BoB", player))
-    add_rule(world.get_location("BBH: Eye to Eye in the Secret Room", player), lambda state: state.has("Vanish Cap", player))
-    add_rule(world.get_location("DDD: Collect the Caps...", player), lambda state: state.has("Vanish Cap", player))
-    add_rule(world.get_location("DDD: Pole-Jumping for Red Coins", player), lambda state: state.can_reach("Bowser in the Fire Sea", 'Region', player))
+    # Course Rules
+    rf = RuleFactory(world, player)
+    # Bob-omb Battlefield
+    rf.assign_rule("BoB: Island", "WC & TJ/CANN | CAPLESS & CANNLESS & LJ")
+    rf.assign_rule("BoB: Mario Wings to the Sky",  "CANN | WC & TJ")
+    rf.assign_rule("BoB: Behind Chain Chomp's Gate", "GP | MOVELESS")
+    # Whomp's Fortress
+    rf.assign_rule("WF: Tower", "{{WF: Chip Off Whomp's Block}}")
+    rf.assign_rule("WF: Chip Off Whomp's Block", "GP")
+    rf.assign_rule("WF: Shoot into the Wild Blue", "WK & TJ/SF | CANN")
+    rf.assign_rule("WF: Fall onto the Caged Island", "CL & {WF: Tower} | MOVELESS & TJ & WK | MOVELESS & LJ & {WF: Tower} | MOVELESS & CANN")
+    rf.assign_rule("WF: Blast Away the Wall", "CANN | CANNLESS")
+    # Jolly Roger Bay
+    rf.assign_rule("JRB: Upper", "TJ/BF/SF/WK")
+    rf.assign_rule("JRB: Red Coins on the Ship Afloat", "CL/CANN")
+    rf.assign_rule("JRB: Blast to the Stone Pillar", "CANN+CL | CANNLESS & MOVELESS")
+    rf.assign_rule("JRB: Through the Jet Stream", "MC | CAPLESS")
+    # Cool, Cool Mountain
+    rf.assign_rule("CCM: Wall Kicks Will Work", "TJ/WK & BF/LJ/SF/DV & CANN/CANNLESS | MOVELESS")
+    # Big Boo's Haunt
+    rf.assign_rule("BBH: Third Floor", "WK+LG | MOVELESS & WK")
+    rf.assign_rule("BBH: Roof", "LJ | MOVELESS")
+    rf.assign_rule("BBH: Secret of the Haunted Books", "KK | MOVELESS")
+    rf.assign_rule("BBH: Seek the 8 Red Coins", "BF/WK/TJ/SF")
+    rf.assign_rule("BBH: Eye to Eye in the Secret Room", "VC")
+    # Haze Maze Cave
+    rf.assign_rule("HMC: Red Coin Area", "CL | MOVELESS & WK")
+    rf.assign_rule("HMC: Pit Islands", "TJ+CL | MOVELESS & WK+TJ | MOVELESS & WK+SF+LG")
+    rf.assign_rule("HMC: Metal-Head Mario Can Move!", "LJ+MC | CAPLESS & LJ+TJ+DV | CAPLESS & MOVELESS & LJ+TJ")
+    rf.assign_rule("HMC: Navigating the Toxic Maze", "WK+LG | SF/BF/TJ")
+    rf.assign_rule("HMC: Watch for Rolling Rocks", "WK")
+    # Lethal Lava Land
+    rf.assign_rule("LLL: Upper Volcano", "CL")
+    # Shifting Sand Land
+    rf.assign_rule("SSL: Upper Pyramid", "CL & TJ/BF/SF/LG | MOVELESS")
+    rf.assign_rule("SSL: Free Flying for 8 Red Coins", "TJ/SF/BF & TJ+WC | TJ/SF/BF & CAPLESS | MOVELESS")
+    # Dire, Dire Docks
+    rf.assign_rule("DDD: Moving Poles", "CL & {{Bowser in the Fire Sea Key}}")
+    rf.assign_rule("DDD: Through the Jet Stream", "MC | CAPLESS")
+    rf.assign_rule("DDD: Collect the Caps...", "VC+MC | CAPLESS & VC")
+    # Snowman's Land
+    rf.assign_rule("SL: Snowman's Big Head", "BF/SF/CANN | TJ & LG")
+    rf.assign_rule("SL: In the Deep Freeze", "WK/SF | MOVELESS & TJ+DV")
+    rf.assign_rule("SL: Into the Igloo", "VC & TJ/BF/SF/WK")
+    # Wet-Dry World
+    rf.assign_rule("WDW: Top", "WK/TJ/SF/BF | MOVELESS")
+    rf.assign_rule("WDW: Downtown", "NAR & LG & TJ/SF/BF | {WDW: Top} & CANN")
+    rf.assign_rule("WDW: Go to Town for Red Coins", "WK")
+    rf.assign_rule("WDW: Quick Race Through Downtown!", "WK/TJ")
+    rf.assign_rule("WDW: Bob-omb Buddy", "TJ | SF+LG")
+    # Tall, Tall Mountain
+    rf.assign_rule("TTM: Middle", "LJ/DV/LG/TJ | MOVELESS")
+    rf.assign_rule("TTM: Top", "LJ/DV")
+    rf.assign_rule("TTM: Blast to the Lonely Mushroom", "LJ+CANN | CANNLESS & LJ")
+    # Tiny-Huge Island
+    rf.assign_rule("THI: Pipes", "NAR | LJ/LG | MOVELESS & BF/SF")
+    rf.assign_rule("THI: Large Top", "BF/SF/TJ | LG+WK")
+    rf.assign_rule("THI: The Tip Top of the Huge Island", "{THI: Large Top} | MOVELESS & {THI: Pipes}")
+    rf.assign_rule("THI: Wiggler's Red Coins", "WK")
+    rf.assign_rule("THI: Make Wiggler Squirm", "GP")
+    # Tick Tock Clock
+    rf.assign_rule("TTC: Lower", "LG/TJ/SF/BF/WK")
+    rf.assign_rule("TTC: Upper", "CL | SF+WK")
+    rf.assign_rule("TTC: Top", "CL | SF+WK")
+    rf.assign_rule("TTC: Stomp on the Thwomp", "LG & TJ/SF/BF")
+    rf.assign_rule("TTC: Stop Time for Red Coins", "NAR | {TTC: Lower}")
+    # Rainbow Ride
+    rf.assign_rule("RR: Maze", "WK")
+    rf.assign_rule("RR: Cruiser", "SF/BF/LG/TJ")
+    rf.assign_rule("RR: House", "SF/BF/LG")
+    rf.assign_rule("RR: Somewhere Over the Rainbow", "CANN")
+    # Cavern of the Metal Cap
+    rf.assign_rule("Cavern of the Metal Cap Red Coins", "MC | CAPLESS")
+    # Vanish Cap Under the Moat
+    rf.assign_rule("Vanish Cap Under the Moat Switch", "WK/TJ/BF/SF/LG | MOVELESS")
+    rf.assign_rule("Vanish Cap Under the Moat Red Coins", "TJ/BF/SF/LG & VC | CAPLESS & TJ/BF/SF/LG & WK")
+    # Bowser in the Fire Sea
+    rf.assign_rule("BitFS: Upper", "CL")
+    rf.assign_rule("Bowser in the Fire Sea Red Coins", "TJ/WK/BF/SF/KK")
+    rf.assign_rule("Bowser in the Fire Sea 1Up Block Near Poles", "LG/WK")
+    # Wing Mario Over the Rainbow
+    rf.assign_rule("Wing Mario Over the Rainbow Red Coins", "TJ+WC")
+    rf.assign_rule("Wing Mario Over the Rainbow 1Up Block", "TJ+WC")
+    # Bowser in the Sky
+    rf.assign_rule("BitS: Top", "CL+TJ | CL+SF+LG")
+    # 100 Coin Stars
     if world.EnableCoinStars[player]:
-        add_rule(world.get_location("DDD: 100 Coins", player), lambda state: state.can_reach("Bowser in the Fire Sea", 'Region', player))
-    add_rule(world.get_location("SL: Into the Igloo", player), lambda state: state.has("Vanish Cap", player))
-    add_rule(world.get_location("WDW: Quick Race Through Downtown!", player), lambda state: state.has("Vanish Cap", player))
-    add_rule(world.get_location("RR: Somewhere Over the Rainbow", player), lambda state: state.has("Cannon Unlock RR", player))
-
-    if world.AreaRandomizer[player] or world.StrictCannonRequirements[player]:
-        # If area rando is on, it may not be possible to modify WDW's starting water level,
-        # which would make it impossible to reach downtown area without the cannon.
-        add_rule(world.get_location("WDW: Quick Race Through Downtown!", player), lambda state: state.has("Cannon Unlock WDW", player))
-        add_rule(world.get_location("WDW: Go to Town for Red Coins", player), lambda state: state.has("Cannon Unlock WDW", player))
-        add_rule(world.get_location("WDW: 1Up Block in Downtown", player), lambda state: state.has("Cannon Unlock WDW", player))
-
-    if world.StrictCapRequirements[player]:
-        add_rule(world.get_location("BoB: Mario Wings to the Sky", player), lambda state: state.has("Wing Cap", player))
-        add_rule(world.get_location("HMC: Metal-Head Mario Can Move!", player), lambda state: state.has("Metal Cap", player))
-        add_rule(world.get_location("JRB: Through the Jet Stream", player), lambda state: state.has("Metal Cap", player))
-        add_rule(world.get_location("SSL: Free Flying for 8 Red Coins", player), lambda state: state.has("Wing Cap", player))
-        add_rule(world.get_location("DDD: Through the Jet Stream", player), lambda state: state.has("Metal Cap", player))
-        add_rule(world.get_location("DDD: Collect the Caps...", player), lambda state: state.has("Metal Cap", player))
-        add_rule(world.get_location("Vanish Cap Under the Moat Red Coins", player), lambda state: state.has("Vanish Cap", player))
-        add_rule(world.get_location("Cavern of the Metal Cap Red Coins", player), lambda state: state.has("Metal Cap", player))
-    if world.StrictCannonRequirements[player]:
-        add_rule(world.get_location("WF: Blast Away the Wall", player), lambda state: state.has("Cannon Unlock WF", player))
-        add_rule(world.get_location("JRB: Blast to the Stone Pillar", player), lambda state: state.has("Cannon Unlock JRB", player))
-        add_rule(world.get_location("CCM: Wall Kicks Will Work", player), lambda state: state.has("Cannon Unlock CCM", player))
-        add_rule(world.get_location("TTM: Blast to the Lonely Mushroom", player), lambda state: state.has("Cannon Unlock TTM", player))
-    if world.StrictCapRequirements[player] and world.StrictCannonRequirements[player]:
-        # Ability to reach the floating island. Need some of those coins to get 100 coin star as well.
-        add_rule(world.get_location("BoB: Find the 8 Red Coins", player), lambda state: state.has("Cannon Unlock BoB", player) or state.has("Wing Cap", player))
-        add_rule(world.get_location("BoB: Shoot to the Island in the Sky", player), lambda state: state.has("Cannon Unlock BoB", player) or state.has("Wing Cap", player))
-        if world.EnableCoinStars[player]:
-            add_rule(world.get_location("BoB: 100 Coins", player), lambda state: state.has("Cannon Unlock BoB", player) or state.has("Wing Cap", player))
-    if world.RandomizeMoves[player]:
-        # Bob-omb Battlefield
-        def can_reach_bob_island(state):
-            # Either flying to the island, or long jumping to it
-            return state.has("Wing Cap", player) and state.has_any({"Triple Jump", "Cannon Unlock BoB"}, player) \
-                or not world.StrictCannonRequirements[player] and not world.StrictCapRequirements[player] and state.has("Long Jump", player)
-        set_rule(world.get_location("BoB: Shoot to the Island in the Sky", player), lambda state: can_reach_bob_island(state))
-        set_rule(world.get_location("BoB: Find the 8 Red Coins", player), lambda state: can_reach_bob_island(state))
-        # Whomp's Fortress
-        add_rule(world.get_location("WF: Chip Off Whomp's Block", player), lambda state: state.has("Ground Pound", player))
-        add_rule(world.get_location("WF: To the Top of the Fortress", player), lambda state: state.has("Ground Pound", player))  # Requires King Whomp to be defeated first
-        add_rule(world.get_location("WF: Shoot into the Wild Blue", player),
-                 lambda state: state.has("Wall Kick", player) and state.has_any({"Triple Jump", "Side Flip", "Kick"}, player) or state.has_all({"Cannon Unlock WF", "Climb"}, player))
-        add_rule(world.get_location("WF: Fall onto the Caged Island", player), lambda state: state.has("Climb", player))
-        # Jolly Roger Bay
-        add_rule(world.get_location("JRB: Red Coins on the Ship Afloat", player),
-                 lambda state: state.has("Climb", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip"}, player))
-        set_rule(world.get_location("JRB: Through the Jet Stream", player),
-                 lambda state: not world.StrictCapRequirements[player] or state.has("Metal Cap", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip"}, player))
-
-        # Big Boo's Haunt
-        add_rule(world.get_location("BBH: Secret of the Haunted Books", player),
-                 lambda state: state.has("Triple Jump", player) or state.has_all({"Side Flip", "Dive"}, player)
-                               or state.has_all({"Long Jump", "Wall Kick"}, player))
-        add_rule(world.get_location("BBH: Seek the 8 Red Coins", player), lambda state: state.has_any({"Backflip", "Wall Kick"}, player))
-        add_rule(world.get_location("BBH: Big Boo's Balcony", player), lambda state: state.has("Wall Jump", player) or state.has_all({"Triple Jump", "Ledge Grab"}, player))
-        add_rule(world.get_location("BBH: Eye to Eye in the Secret Room", player), lambda state: state.has("Wall Jump", player) or state.has_all({"Triple Jump", "Ledge Grab"}, player))
-        add_rule(world.get_location("BBH: 1Up Block Top of Mansion", player), lambda state: state.has("Wall Jump", player) or state.has_all({"Triple Jump", "Ledge Grab"}, player))
-        # Hazy Maze Cave
-        add_rule(world.get_location("HMC: Elevate for 8 Red Coins", player), lambda state: state.has("Climb", player))
-        set_rule(world.get_location("HMC: Metal-Head Mario Can Move!", player),
-                 lambda state: state.has("Long Jump", player) and (state.has("Metal Cap", player) or not world.StrictCapRequirements[player] and state.has("Triple Jump", player)))
-        add_rule(world.get_location("HMC: Navigating the Toxic Maze", player),
-                 lambda state: state.has_all({"Wall Kick", "Ledge Grab"}, player) or state.has_any({"Side Flip", "Backflip", "Triple Jump"}, player))
-        add_rule(world.get_location("HMC: A-Maze-Ing Emergency Exit", player),
-                 lambda state: state.has_all({"Triple Jump", "Climb"}, player) or (state.has("Long Jump", player) and state.has_any({"Side Flip", "Wall Kick", "Backflip"}, player)))
-        add_rule(world.get_location("HMC: Watch for Rolling Rocks", player), lambda state: state.has("Wall Kick", player))
-        add_rule(world.get_location("HMC: 1Up Block above Pit", player),
-                 lambda state: state.has_all({"Triple Jump", "Climb"}, player))
-        # Lethal Lava Land
-        add_rule(world.get_location("LLL: Hot-Foot-It into the Volcano", player), lambda state: state.has("Climb", player))
-        add_rule(world.get_location("LLL: Elevator Tour in the Volcano", player), lambda state: state.has("Climb", player))
-        # Dire, Dire Docks
-        add_rule(world.get_location("DDD: Pole-Jumping for Red Coins", player), lambda state: state.has("Climb", player))
-        # Snowman's Land
-        add_rule(world.get_location("SL: Snowman's Big Head", player),
-                 lambda state: state.has_any({"Backflip", "Side Flip", "Cannon Unlock SL"}, player) or state.has_all({"Triple Jump", "Ledge Grab"}, player))
-        add_rule(world.get_location("SL: In the Deep Freeze", player), lambda state: state.has_any({"Backflip", "Side Flip", "Wall Kick"}, player))
-        add_rule(world.get_location("SL: Into the Igloo", player), lambda state: state.has_any({"Triple Jump", "Backflip", "Side Flip", "Wall Kick"}, player))
-        # Wet-Dry World
-        def can_reach_wdw_downtown(state):
-            return state.has("Cannon Unlock WDW", player) or not world.AreaRandomizer[player] and state.has("Ledge Grab", player) and state.has_any({"Backflip", "Side Flip", "Triple Jump"}, player)
-        set_rule(world.get_location("WDW: Shocking Arrow Lifts!", player), lambda state: state.has_any({"Ledge Grab", "Triple Jump", "Side Flip", "Backflip"}, player))
-        set_rule(world.get_location("WDW: Top o' the Town", player),
-                 lambda state: state.has_any({"Wall Kick", "Triple Jump", "Backflip", "Side Flip"}, player))
-        add_rule(world.get_location("WDW: Secrets in the Shallows & Sky", player), lambda state: state.has_any({"Triple Jump", "Side Flip", "Backflip"}, player))
-        # Area randomizer dramatically affects rules for reaching downtown in Wet-Dry World
-        set_rule(world.get_location("WDW: Go to Town for Red Coins", player),
-                 lambda state: can_reach_wdw_downtown(state) and state.has_all({"Ledge Grab", "Wall Kick"}, player))
-        set_rule(world.get_location("WDW: Quick Race Through Downtown!", player),
-                 lambda state: can_reach_wdw_downtown(state) and state.has_all({"Ledge Grab", "Wall Kick"}, player))
-        add_rule(world.get_location("WDW: Bob-omb Buddy", player),
-                 lambda state: state.has("Triple Jump", player) or state.has_all({"Side Flip", "Ledge Grab"}, player))
-        add_rule(world.get_location("WDW: 1Up Block in Downtown", player), lambda state: can_reach_wdw_downtown(state))
-        # Tall, Tall Mountain
-        add_rule(world.get_location("TTM: Scale the Mountain", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
-        add_rule(world.get_location("TTM: Mystery of the Monkey Cage", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
-        add_rule(world.get_location("TTM: Mysterious Mountainside", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
-        add_rule(world.get_location("TTM: Breathtaking View from Bridge", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
-        add_rule(world.get_location("TTM: Blast to the Lonely Mushroom", player), lambda state: state.has("Long Jump", player))
-
-        # Tiny-Huge Island
-        add_rule(world.get_location("THI: Pluck the Piranha Flower", player), lambda state: state.has_any({"Long Jump", "Ledge Grab"}, player))
-        add_rule(world.get_location("THI: The Tip Top of the Huge Island", player),
-                 lambda state: state.has_any({"Long Jump", "Ledge Grab"}, player) and state.has_any({"Backflip", "Side Flip", "Triple Jump"}, player))
-        add_rule(world.get_location("THI: Rematch with Koopa the Quick", player), lambda state: state.has("Long Jump", player))
-        add_rule(world.get_location("THI: Five Itty Bitty Secrets", player), lambda state: state.has_any({"Long Jump", "Ledge Grab"}, player))
-        add_rule(world.get_location("THI: Wiggler's Red Coins", player),
-                 lambda state: state.has_any({"Long Jump", "Ledge Grab"}, player) and state.has("Wall Kick", player))
-        add_rule(world.get_location("THI: Make Wiggler Squirm", player),
-                 lambda state: (state.has_all({"Ledge Grab", "Wall Kick"}, player)
-                                or state.has_any({"Long Jump", "Ledge Grab"}, player)and state.has_any({"Backflip", "Side Flip", "Triple Jump"}, player))
-                                and state.has("Ground Pound", player))
-        add_rule(world.get_location("THI: Bob-omb Buddy", player), lambda state: state.has_any({"Long Jump", "Ledge Grab"}, player))
-        add_rule(world.get_location("THI: 1Up Block THI Large near Start", player), lambda state: state.has_any({"Long Jump", "Ledge Grab"}, player))
-        add_rule(world.get_location("THI: 1Up Block Windy Area", player), lambda state: state.has_any({"Long Jump", "Ledge Grab"}, player))
-        # Tick Tock Clock
-        add_rule(world.get_location("TTC: Roll into the Cage", player),
-                 lambda state: state.has_any({"Ledge Grab", "Triple Jump", "Side Flip", "Backflip", "Wall Kick"}, player))
-        add_rule(world.get_location("TTC: The Pit and the Pendulums", player),
-                 lambda state: state.has_all({"Ledge Grab", "Climb"}, player))
-        add_rule(world.get_location("TTC: Get a Hand", player),
-                 lambda state: state.has_any({"Ledge Grab", "Triple Jump", "Side Flip", "Backflip", "Wall Kick"}, player))
-        add_rule(world.get_location("TTC: Stomp on the Thwomp", player),
-                 lambda state: state.has("Ledge Grab", player) and state.has_any({"Triple Jump", "Side Flip", "Backflip"}, player))
-        add_rule(world.get_location("TTC: Timed Jumps on Moving Bars", player),
-                 lambda state: state.has("Ledge Grab", player) and state.has_any({"Triple Jump", "Side Flip", "Backflip"}, player))
-        add_rule(world.get_location("TTC: 1Up Block Midway Up", player),
-                 lambda state: state.has("Ledge Grab", player) and state.has_any({"Triple Jump", "Side Flip", "Backflip"}, player))
-        add_rule(world.get_location("TTC: 1Up Block at the Top", player),
-                 lambda state: state.has("Ledge Grab", player) and state.has_any({"Triple Jump", "Side Flip", "Backflip"}, player))
-        # Rainbow Ride
-        add_rule(world.get_location("RR: Cruiser Crossing the Rainbow", player), lambda state: state.has_any({"Ledge Grab", "Triple Jump", "Side Flip", "Backflip"}, player))
-        add_rule(world.get_location("RR: The Big House in the Sky", player), lambda state: state.has_any({"Side Flip", "Backflip", "Ledge Grab"}, player))
-        add_rule(world.get_location("RR: Coins Amassed in a Maze", player), lambda state: state.has("Wall Kick", player))
-        add_rule(world.get_location("RR: Somewhere Over the Rainbow", player),
-                 lambda state: state.has_any({"Ledge Grab", "Triple Jump", "Side Flip", "Backflip"}, player) and state.has("Climb", player))
-        add_rule(world.get_location("RR: Bob-omb Buddy", player), lambda state: state.has("Wall Kick", player))
-        add_rule(world.get_location("RR: 1Up Block On House in the Sky", player), lambda state: state.has_any({"Side Flip", "Backflip", "Ledge Grab"}, player))
-        # Bowser
-        add_rule(world.get_location("Bowser in the Fire Sea Red Coins", player),
-                 lambda state: state.has("Climb", player) and state.has_any({"Triple Jump", "Wall Kick", "Backflip", "Side Flip", "Kick"}, player))
-        add_rule(world.get_location("Bowser in the Fire Sea Key", player), lambda state: state.has("Climb", player))
-        add_rule(world.get_location("Bowser in the Fire Sea 1Up Block Swaying Stairs", player), lambda state: state.has("Climb", player))
-        add_rule(world.get_location("Bowser in the Fire Sea 1Up Block Near Poles", player),
-                 lambda state: state.has("Climb", player) and state.has_any({"Ledge Grab", "Wall Kick"}, player))
-        add_rule(world.get_location("Bowser in the Sky Red Coins", player),
-                 lambda state: state.has("Climb", player) and (state.has("Triple Jump", player) or state.has_all({"Side Flip", "Ledge Grab"}, player)))
-
-        # Others
-        add_rule(world.get_location("Vanish Cap Under the Moat Red Coins", player),
-                 lambda state: state.has_any({"Triple Jump", "Side Flip", "Backflip", "Ledge Grab"}, player) and (
-                     state.has("Vanish Cap", player) or
-                     not world.StrictCapRequirements[player] and state.has("Wall Kick", player)))
-        if world.EnableCoinStars[player]:
-            add_rule(world.get_location("BoB: 100 Coins", player), lambda state: can_reach_bob_island(state))
-            add_rule(world.get_location("JRB: 100 Coins", player),
-                     lambda state: state.has("Ground Pound", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip"}, player))
-            add_rule(world.get_location("HMC: 100 Coins", player), lambda state: state.has_all({"Climb", "Triple Jump", "Ground Pound"}, player))
-            add_rule(world.get_location("SSL: 100 Coins", player), lambda state: state.has_any({"Climb", "Ground Pound"}, player))
-            add_rule(world.get_location("DDD: 100 Coins", player), lambda state: state.has_all({"Climb", "Ground Pound"}, player))
-            add_rule(world.get_location("WDW: 100 Coins", player),
-                     lambda state: state.has("Ground Pound", player) and state.has_any({"Wall Kick", "Triple Jump", "Side Flip", "Backflip"}, player))
-            add_rule(world.get_location("TTM: 100 Coins", player), lambda state: state.has_any({"Long Jump", "Dive"}, player))
-            add_rule(world.get_location("TTC: 100 Coins", player),
-                     lambda state: state.has("Ledge Grab", player) and state.has_any({"Triple Jump", "Side Flip", "Backflip"}, player))
-            add_rule(world.get_location("RR: 100 Coins", player),
-                     lambda state: state.has_all({"Wall Kick", "Ground Pound"}, player) and state.has_any({"Ledge Grab", "Side Flip", "Backflip"}, player))
-
-        if world.StrictMoveRequirements[player]:
-            # Techniques used to ignore requirement are provided by comment
-            add_rule(world.get_location("BoB: Behind Chain Chomp's Gate", player), lambda state: state.has("Ground Pound", player))  # Bomb Clip
-            set_rule(world.get_location("WF: Shoot into the Wild Blue", player),
-                     lambda state: state.has("Wall Kick", player) and state.has_any({"Triple Jump", "Side Flip"}, player) or state.has_all({"Cannon Unlock WF", "Climb"}, player)) # Backwards air kick
-            add_rule(world.get_location("CCM: Wall Kicks Will Work", player),
-                     lambda state: state.has("Triple Jump", player) or state.has("Wall Kick", player) and state.has_any(
-                         {"Backflip", "Long Jump", "Side Flip", "Dive"}, player))
-            add_rule(world.get_location("BBH: Big Boo's Balcony", player), lambda state: state.has("Long Jump", player))  # Can get on manor roof with specific jumps
-            add_rule(world.get_location("BBH: 1Up Block Top of Mansion", player), lambda state: state.has("Long Jump", player))  # Can get on manor roof with specific jumps
-            add_rule(world.get_location("HMC: Swimming Beast in the Cavern", player), lambda state: state.has("Ground Pound", player))  # Jump up Nessie's neck
-            set_rule(world.get_location("HMC: A-Maze-Ing Emergency Exit", player), lambda state: state.has_all({"Triple Jump", "Climb"}, player))
-            add_rule(world.get_location("SSL: Inside the Ancient Pyramid", player),
-                     lambda state: state.has("Climb", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip", "Ledge Grab"}, player))  # Enter from top of pyramid
-            add_rule(world.get_location("SSL: Pyramid Puzzle", player),
-                     lambda state: state.has("Climb", player) and state.has_any({"Triple Jump", "Backflip", "Side Flip", "Ledge Grab"}, player))  # Enter from top of pyramid
-            add_rule(world.get_location("TTM: Scary 'Shrooms, Red Coins", player),
-                     lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))  # Crazed Crate over the first gap
-            add_rule(world.get_location("TTM: Bob-omb Buddy", player),
-                     lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))  # Crazed Crate over the first gap
-            add_rule(world.get_location("TTM: 1Up Block on Red Mushroom", player),
-                     lambda state: state.has_any({"Long Jump", "Dive", "Ledge Grab", "Triple Jump"}, player))  # Crazed Crate over the first gap
-            set_rule(world.get_location("SL: In the Deep Freeze", player), lambda state: state.has_any({"Backflip", "Side Flip", "Wall Kick"}, player))
-            add_rule(world.get_location("Vanish Cap Under the Moat Switch", player),
-                     lambda state: state.has_any({"Wall Kick", "Triple Jump", "Side Flip", "Backflip", "Ledge Grab"}, player))  # Jumping over the ledge from the start
-            if world.EnableCoinStars[player]:
-                add_rule(world.get_location("JRB: 100 Coins", player), lambda state: state.has("Climb", player))  # Brings available coin count from 102 to 104
-                add_rule(world.get_location("WF: 100 Coins", player), lambda state: state.has("Ground Pound", player))  # Stomp on Whomps for coins
-                add_rule(world.get_location("SL: 100 Coins", player), lambda state: state.has("Vanish Cap", player))  # Compensates for coin gathering difficulty with reduced moves
-
-    #Rules for Secret Stars
-    add_rule(world.get_location("Wing Mario Over the Rainbow Red Coins", player), lambda state: state.has("Wing Cap", player))
-    add_rule(world.get_location("Wing Mario Over the Rainbow 1Up Block", player), lambda state: state.has("Wing Cap", player))
+        rf.assign_rule("WF: 100 Coins", "GP | MOVELESS")
+        rf.assign_rule("JRB: 100 Coins", "GP & CL/CANN | MOVELESS & GP")
+        rf.assign_rule("HMC: 100 Coins", "GP")
+        rf.assign_rule("SSL: 100 Coins", "{SSL: Upper Pyramid} | GP")
+        rf.assign_rule("DDD: 100 Coins", "GP")
+        rf.assign_rule("SSL: 100 Coins", "VC | MOVELESS")
+        rf.assign_rule("WDW: 100 Coins", "GP")
+        rf.assign_rule("TTC: 100 Coins", "GP")
+        rf.assign_rule("RR: 100 Coins", "GP")
+    # Castle Stars
     add_rule(world.get_location("Toad (Basement)", player), lambda state: state.can_reach("Basement", 'Region', player) and state.has("Power Star", player, 12))
     add_rule(world.get_location("Toad (Second Floor)", player), lambda state: state.can_reach("Second Floor", 'Region', player) and state.has("Power Star", player, 25))
     add_rule(world.get_location("Toad (Third Floor)", player), lambda state: state.can_reach("Third Floor", 'Region', player) and state.has("Power Star", player, 35))
@@ -309,7 +201,137 @@ def set_rules(world, player: int, area_connections):
     add_rule(world.get_location("MIPS 1", player), lambda state: state.can_reach("Basement", 'Region', player) and state.has("Power Star", player, world.MIPS1Cost[player].value))
     add_rule(world.get_location("MIPS 2", player), lambda state: state.can_reach("Basement", 'Region', player) and state.has("Power Star", player, world.MIPS2Cost[player].value))
 
-    world.completion_condition[player] = lambda state: state.can_reach("Bowser in the Sky", 'Region', player) \
-        and (not world.RandomizeMoves[player]
-             or state.has("Climb", player) and (state.has("Triple Jump", player) or state.has_all({"Side Flip", "Ledge Grab"}, player)))
+    world.completion_condition[player] = lambda state: state.can_reach("BitS: Top", 'Region', player)
+
+
+class RuleFactory:
+
+    world: MultiWorld
+    player: int
+    move_randomizer: bool
+    area_randomizer: bool
+    capless: bool
+    cannonless: bool
+    moveless: bool
+
+    token_table = {
+        "TJ": "Triple Jump",
+        "LJ": "Long Jump",
+        "BF": "Backflip",
+        "SF": "Side Flip",
+        "WK": "Wall Kick",
+        "DV": "Dive",
+        "GP": "Ground Pound",
+        "KK": "Kick",
+        "CL": "Climb",
+        "LG": "Ledge Grab",
+        "WC": "Wing Cap",
+        "MC": "Metal Cap",
+        "VC": "Vanish Cap"
+    }
+
+    class SM64LogicException(Exception):
+        pass
+
+    def __init__(self, world, player):
+        self.world = world
+        self.player = player
+        self.move_randomizer = world.RandomizeMoves[player]
+        self.area_randomizer = world.AreaRandomizer[player].value > 0
+        self.capless = not world.StrictCapRequirements[player]
+        self.cannonless = not world.StrictCannonRequirements[player]
+        self.moveless = not world.StrictMoveRequirements[player] or not self.move_randomizer
+
+    def assign_rule(self, target_name: str, rule_expr: str):
+        target = self.world.get_location(target_name, self.player) if target_name in location_table else self.world.get_entrance(target_name, self.player)
+        cannon_name = "Cannon Unlock " + target_name.split(':')[0]
+        expressions = rule_expr.split(" | ")
+        rules = []
+        for expression in expressions:
+            try:
+                or_clause = self.combine_and_clauses(expression, cannon_name)
+            except RuleFactory.SM64LogicException as exception:
+                raise RuleFactory.SM64LogicException(f"Error generating rule for {target_name} using rule expression {rule_expr}: {exception}")
+            if or_clause is True:
+                return
+            if or_clause is not False:
+                rules.append(or_clause)
+        if rules:
+            if len(rules) == 1:
+                set_rule(target, rules[0])
+            else:
+                set_rule(target, lambda state: any(rule(state) for rule in rules))
+
+    def combine_and_clauses(self, rule_expr: str, cannon_name: str) -> Union[Callable, bool]:
+        expressions = rule_expr.split(" & ")
+        rules = []
+        for expression in expressions:
+            and_clause = self.make_lambda(expression, cannon_name)
+            if and_clause is False:
+                return False
+            if and_clause is not True:
+                rules.append(and_clause)
+        if rules:
+            if len(rules) == 1:
+                return rules[0]
+            return lambda state: all(rule(state) for rule in rules)
+        else:
+            return True
+
+    def make_lambda(self, expression: str, cannon_name: str) -> Union[Callable, bool]:
+        if '+' in expression:
+            tokens = expression.split('+')
+            items = set()
+            for token in tokens:
+                item = self.parse_token(token, cannon_name)
+                if item is True:
+                    continue
+                if item is False:
+                    return False
+                items.add(item)
+            if items:
+                return lambda state: state.has_all(items, self.player)
+            else:
+                return True
+        if '/' in expression:
+            tokens = expression.split('/')
+            items = set()
+            for token in tokens:
+                item = self.parse_token(token, cannon_name)
+                if item is True:
+                    return True
+                if item is False:
+                    continue
+                items.add(item)
+            if items:
+                return lambda state: state.has_any(items, self.player)
+            else:
+                return False
+        if '{{' in expression:
+            return lambda state: state.can_reach(expression[2:-2], "Location", self.player)
+        if '{' in expression:
+            return lambda state: state.can_reach(expression[1:-1], "Region", self.player)
+        item = self.parse_token(expression, cannon_name)
+        if item in (True, False):
+            return item
+        return lambda state: state.has(item, self.player)
+
+    def parse_token(self, token: str, cannon_name: str) -> Union[str, bool]:
+        if token == "CANN":
+            return cannon_name
+        if token == "CAPLESS":
+            return self.capless
+        if token == "CANNLESS":
+            return self.cannonless
+        if token == "MOVELESS":
+            return self.moveless
+        if token == "NAR":
+            return not self.area_randomizer
+        item = self.token_table.get(token, None)
+        if not item:
+            raise Exception(f"Invalid token: '{item}'")
+        if not self.move_randomizer and item in action_item_table:
+            # All move items are possessed from the start with MR off
+            return True
+        return item
 
