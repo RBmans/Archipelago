@@ -49,13 +49,16 @@ def set_rules(world, player: int, area_connections):
     # Destination Format: LVL | AREA with LVL = LEVEL_x, AREA = Area as used in sm64 code
     area_connections.update({sm64entrances[entrance]: destination for entrance, destination in zip(entrance_ids,sm64entrances)})
 
+    rf = RuleFactory(world, player)
+
     connect_regions(world, player, "Menu", sm64courses[temp_assign[0]]) # BOB
     connect_regions(world, player, "Menu", sm64courses[temp_assign[1]], lambda state: state.has("Power Star", player, 1)) # WF
     connect_regions(world, player, "Menu", sm64courses[temp_assign[2]], lambda state: state.has("Power Star", player, 3)) # JRB
     connect_regions(world, player, "Menu", sm64courses[temp_assign[3]], lambda state: state.has("Power Star", player, 3)) # CCM
     connect_regions(world, player, "Menu", sm64courses[temp_assign[4]], lambda state: state.has("Power Star", player, 12)) # BBH
     connect_regions(world, player, "Menu", sm64courses[temp_assign[16]], lambda state: state.has("Power Star", player, 1)) # PSS
-    connect_regions(world, player, "Menu", sm64courses[temp_assign[17]], lambda state: state.has("Power Star", player, 3)) # SA
+    connect_regions(world, player, "Menu", sm64courses[temp_assign[17]],
+                    lambda state: state.has("Power Star", player, 3) and rf.build_rule("SF/BF | TJ & LG | MOVELESS & TJ")) # SA
     connect_regions(world, player, "Menu", sm64courses[temp_assign[19]], lambda state: state.has("Power Star", player, 10)) # TOTWC
     connect_regions(world, player, "Menu", sm64courses[temp_assign[18]], lambda state: state.has("Power Star", player, world.FirstBowserStarDoorCost[player].value)) # BITDW
 
@@ -66,10 +69,7 @@ def set_rules(world, player: int, area_connections):
     connect_regions(world, player, "Basement", sm64courses[temp_assign[7]]) # SSL
     connect_regions(world, player, "Basement", sm64courses[temp_assign[8]], lambda state: state.has("Power Star", player, world.BasementStarDoorCost[player].value)) # DDD
     connect_regions(world, player, "Hazy Maze Cave", sm64courses[temp_assign[20]]) # COTMC
-    if world.RandomizeMoves[player]:
-        connect_regions(world, player, "Basement", sm64courses[temp_assign[21]], lambda state: state.has("Ground Pound", player))  # VCUTM
-    else:
-        connect_regions(world, player, "Basement", sm64courses[temp_assign[21]]) # VCUTM
+    connect_regions(world, player, "Basement", sm64courses[temp_assign[21]], rf.build_rule("GP")) # VCUTM
     connect_regions(world, player, "Basement", sm64courses[temp_assign[22]], lambda state: state.has("Power Star", player, world.BasementStarDoorCost[player].value) and
                                                                                        state.can_reach("DDD: Board Bowser's Sub", 'Location', player)) # BITFS
 
@@ -82,21 +82,12 @@ def set_rules(world, player: int, area_connections):
     connect_regions(world, player, "Second Floor", sm64courses[temp_assign[13]]) # THI Huge
 
     connect_regions(world, player, "Second Floor", "Third Floor", lambda state: state.has("Power Star", player, world.SecondFloorStarDoorCost[player].value))
-    if world.RandomizeMoves[player]:
-        connect_regions(world, player, "Third Floor", sm64courses[temp_assign[14]],
-                        lambda state: state.has_any({"Ledge Grab", "Triple Jump", "Backflip", "Side Flip"}, player)) # TTC
-        connect_regions(world, player, "Third Floor", sm64courses[temp_assign[15]],
-                        lambda state: state.has_any({"Triple Jump", "Backflip", "Side Flip"}, player))  # RR
-        connect_regions(world, player, "Third Floor", sm64courses[temp_assign[23]],
-                        lambda state: state.has_any({"Triple Jump", "Backflip", "Side Flip"}, player))  # WMOTR
-    else:
-        connect_regions(world, player, "Third Floor", sm64courses[temp_assign[14]]) # TTC
-        connect_regions(world, player, "Third Floor", sm64courses[temp_assign[15]]) # RR
-        connect_regions(world, player, "Third Floor", sm64courses[temp_assign[23]]) # WMOTR
+    connect_regions(world, player, "Third Floor", sm64courses[temp_assign[14]], rf.build_rule("LG/TJ/SF/BF/WK")) # TTC
+    connect_regions(world, player, "Third Floor", sm64courses[temp_assign[15]], rf.build_rule("TJ/SF/BF")) # RR
+    connect_regions(world, player, "Third Floor", sm64courses[temp_assign[23]], rf.build_rule("TJ/SF/BF")) # WMOTR
     connect_regions(world, player, "Third Floor", "Bowser in the Sky", lambda state: state.has("Power Star", player, world.StarsToFinish[player].value)) # BITS
 
     # Course Rules
-    rf = RuleFactory(world, player)
     # Bob-omb Battlefield
     rf.assign_rule("BoB: Island", "WC & TJ/CANN | CAPLESS & CANNLESS & LJ")
     rf.assign_rule("BoB: Mario Wings to the Sky",  "CANN | WC & TJ")
@@ -122,7 +113,7 @@ def set_rules(world, player: int, area_connections):
     rf.assign_rule("BBH: Eye to Eye in the Secret Room", "VC")
     # Haze Maze Cave
     rf.assign_rule("HMC: Red Coin Area", "CL | MOVELESS & WK")
-    rf.assign_rule("HMC: Pit Islands", "TJ+CL | MOVELESS & WK+TJ | MOVELESS & WK+SF+LG")
+    rf.assign_rule("HMC: Pit Islands", "TJ+CL | MOVELESS & WK & TJ/LJ | MOVELESS & WK+SF+LG")
     rf.assign_rule("HMC: Metal-Head Mario Can Move!", "LJ+MC | CAPLESS & LJ+TJ+DV | CAPLESS & MOVELESS & LJ+TJ")
     rf.assign_rule("HMC: Navigating the Toxic Maze", "WK+LG | SF/BF/TJ")
     rf.assign_rule("HMC: Watch for Rolling Rocks", "WK")
@@ -151,7 +142,7 @@ def set_rules(world, player: int, area_connections):
     rf.assign_rule("TTM: Blast to the Lonely Mushroom", "LJ+CANN | CANNLESS & LJ")
     # Tiny-Huge Island
     rf.assign_rule("THI: Pipes", "NAR | LJ/LG | MOVELESS & BF/SF")
-    rf.assign_rule("THI: Large Top", "BF/SF/TJ | LG+WK")
+    rf.assign_rule("THI: Large Top", "BF/SF/TJ | LG+WK | CANN")
     rf.assign_rule("THI: The Tip Top of the Huge Island", "{THI: Large Top} | MOVELESS & {THI: Pipes}")
     rf.assign_rule("THI: Wiggler's Red Coins", "WK")
     rf.assign_rule("THI: Make Wiggler Squirm", "GP")
@@ -173,7 +164,7 @@ def set_rules(world, player: int, area_connections):
     rf.assign_rule("Vanish Cap Under the Moat Red Coins", "TJ/BF/SF/LG & VC | CAPLESS & TJ/BF/SF/LG & WK")
     # Bowser in the Fire Sea
     rf.assign_rule("BitFS: Upper", "CL")
-    rf.assign_rule("Bowser in the Fire Sea Red Coins", "TJ/WK/BF/SF/KK")
+    rf.assign_rule("Bowser in the Fire Sea Red Coins", "LG/WK")
     rf.assign_rule("Bowser in the Fire Sea 1Up Block Near Poles", "LG/WK")
     # Wing Mario Over the Rainbow
     rf.assign_rule("Wing Mario Over the Rainbow Red Coins", "TJ+WC")
@@ -245,22 +236,30 @@ class RuleFactory:
     def assign_rule(self, target_name: str, rule_expr: str):
         target = self.world.get_location(target_name, self.player) if target_name in location_table else self.world.get_entrance(target_name, self.player)
         cannon_name = "Cannon Unlock " + target_name.split(':')[0]
+        try:
+            rule = self.build_rule(rule_expr, cannon_name)
+        except RuleFactory.SM64LogicException as exception:
+            raise RuleFactory.SM64LogicException(
+                f"Error generating rule for {target_name} using rule expression {rule_expr}: {exception}")
+        if rule:
+            set_rule(target, rule)
+
+    def build_rule(self, rule_expr: str, cannon_name: str = '') -> Callable:
         expressions = rule_expr.split(" | ")
         rules = []
         for expression in expressions:
-            try:
-                or_clause = self.combine_and_clauses(expression, cannon_name)
-            except RuleFactory.SM64LogicException as exception:
-                raise RuleFactory.SM64LogicException(f"Error generating rule for {target_name} using rule expression {rule_expr}: {exception}")
+            or_clause = self.combine_and_clauses(expression, cannon_name)
             if or_clause is True:
-                return
+                return None
             if or_clause is not False:
                 rules.append(or_clause)
         if rules:
             if len(rules) == 1:
-                set_rule(target, rules[0])
+                return rules[0]
             else:
-                set_rule(target, lambda state: any(rule(state) for rule in rules))
+                return lambda state: any(rule(state) for rule in rules)
+        else:
+            return None
 
     def combine_and_clauses(self, rule_expr: str, cannon_name: str) -> Union[Callable, bool]:
         expressions = rule_expr.split(" & ")
