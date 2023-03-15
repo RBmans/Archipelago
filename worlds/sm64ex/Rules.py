@@ -23,10 +23,8 @@ def set_rules(world, player: int, area_connections):
         world.random.shuffle(course_entrance_ids)
         if world.AreaRandomizer[player].value < 3 and world.RandomizeMoves[player]:
             first_course = world.random.choice(valid_move_randomizer_start_courses)
-            original_position = course_entrance_ids.index(first_course)
-            swap_course = course_entrance_ids[0]
-            course_entrance_ids[0] = first_course
-            course_entrance_ids[original_position] = swap_course
+            course_to_swap = course_entrance_ids.index(0)
+            course_entrance_ids[first_course], course_entrance_ids[course_to_swap] = 0, course_entrance_ids[first_course]
 
     if world.AreaRandomizer[player].value == 2:  # Randomize Secrets as well
         world.random.shuffle(secret_entrance_ids)
