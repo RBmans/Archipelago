@@ -40,8 +40,8 @@ def create_regions(world: MultiWorld, player: int):
 
     regWhomp = create_region("Whomp's Fortress", player, world)
     create_locs(regWhomp, "WF: Chip Off Whomp's Block", "WF: Shoot into the Wild Blue", "WF: Red Coins on the Floating Isle",
-                          "WF: Fall onto the Caged Island", "WF: Blast Away the Wall", "WF: Bob-omb Buddy")
-    create_subregion(regWhomp, "WF: Tower", "WF: To the Top of the Fortress")
+                          "WF: Fall onto the Caged Island", "WF: Blast Away the Wall")
+    create_subregion(regWhomp, "WF: Tower", "WF: To the Top of the Fortress", "WF: Bob-omb Buddy")
     if (world.EnableCoinStars[player].value):
         create_locs(regWhomp, "WF: 100 Coins")
 
