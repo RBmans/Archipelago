@@ -55,8 +55,7 @@ def set_rules(world, player: int, area_connections):
     connect_regions(world, player, "Menu", sm64courses[temp_assign[3]], lambda state: state.has("Power Star", player, 3)) # CCM
     connect_regions(world, player, "Menu", sm64courses[temp_assign[4]], lambda state: state.has("Power Star", player, 12)) # BBH
     connect_regions(world, player, "Menu", sm64courses[temp_assign[16]], lambda state: state.has("Power Star", player, 1)) # PSS
-    connect_regions(world, player, "Menu", sm64courses[temp_assign[17]],
-                    lambda state: state.has("Power Star", player, 3) and rf.build_rule("SF/BF | TJ & LG | MOVELESS & TJ")) # SA
+    connect_regions(world, player, sm64courses[temp_assign[2]], sm64courses[temp_assign[17]], rf.build_rule("SF/BF | TJ & LG | MOVELESS & TJ")) # SA
     connect_regions(world, player, "Menu", sm64courses[temp_assign[19]], lambda state: state.has("Power Star", player, 10)) # TOTWC
     connect_regions(world, player, "Menu", sm64courses[temp_assign[18]], lambda state: state.has("Power Star", player, world.FirstBowserStarDoorCost[player].value)) # BITDW
 
