@@ -14,7 +14,7 @@ def fix_reg(entrance_ids, reg, invalidspot, swaplist, world):
             swaplist.append(invalidspot)
             swaplist.remove(rand)
 
-def set_rules(world, player: int, area_connections):
+def set_rules(world, player: int, area_connections, star_costs):
     destination_regions = list(range(13)) + [12,13,14] + list(range(15,15+len(sm64secrets))) # Two instances of Destination Course THI. Past normal course idx are secret regions
     secret_entrance_ids = list(range(len(sm64paintings), len(sm64paintings) + len(sm64secrets)))
     course_entrance_ids = list(range(len(sm64paintings)))
@@ -57,17 +57,17 @@ def set_rules(world, player: int, area_connections):
     connect_regions(world, player, "Menu", sm64courses[temp_assign[16]], lambda state: state.has("Power Star", player, 1)) # PSS
     connect_regions(world, player, sm64courses[temp_assign[2]], sm64courses[temp_assign[17]], rf.build_rule("SF/BF | TJ & LG | MOVELESS & TJ")) # SA
     connect_regions(world, player, "Menu", sm64courses[temp_assign[19]], lambda state: state.has("Power Star", player, 10)) # TOTWC
-    connect_regions(world, player, "Menu", sm64courses[temp_assign[18]], lambda state: state.has("Power Star", player, world.FirstBowserStarDoorCost[player].value)) # BITDW
+    connect_regions(world, player, "Menu", sm64courses[temp_assign[18]], lambda state: state.has("Power Star", player, star_costs["FirstBowserDoorCost"])) # BITDW
 
     connect_regions(world, player, "Menu", "Basement", lambda state: state.has("Basement Key", player) or state.has("Progressive Key", player, 1))
 
     connect_regions(world, player, "Basement", sm64courses[temp_assign[5]]) # HMC
     connect_regions(world, player, "Basement", sm64courses[temp_assign[6]]) # LLL
     connect_regions(world, player, "Basement", sm64courses[temp_assign[7]]) # SSL
-    connect_regions(world, player, "Basement", sm64courses[temp_assign[8]], lambda state: state.has("Power Star", player, world.BasementStarDoorCost[player].value)) # DDD
+    connect_regions(world, player, "Basement", sm64courses[temp_assign[8]], lambda state: state.has("Power Star", player, star_costs["BasementDoorCost"])) # DDD
     connect_regions(world, player, "Hazy Maze Cave", sm64courses[temp_assign[20]]) # COTMC
     connect_regions(world, player, "Basement", sm64courses[temp_assign[21]], rf.build_rule("GP")) # VCUTM
-    connect_regions(world, player, "Basement", sm64courses[temp_assign[22]], lambda state: state.has("Power Star", player, world.BasementStarDoorCost[player].value) and
+    connect_regions(world, player, "Basement", sm64courses[temp_assign[22]], lambda state: state.has("Power Star", player, star_costs["BasementDoorCost"]) and
                                                                                        state.can_reach("DDD: Board Bowser's Sub", 'Location', player)) # BITFS
 
     connect_regions(world, player, "Menu", "Second Floor", lambda state: state.has("Second Floor Key", player) or state.has("Progressive Key", player, 2))
@@ -78,11 +78,11 @@ def set_rules(world, player: int, area_connections):
     connect_regions(world, player, "Second Floor", sm64courses[temp_assign[12]]) # THI Tiny
     connect_regions(world, player, "Second Floor", sm64courses[temp_assign[13]]) # THI Huge
 
-    connect_regions(world, player, "Second Floor", "Third Floor", lambda state: state.has("Power Star", player, world.SecondFloorStarDoorCost[player].value))
+    connect_regions(world, player, "Second Floor", "Third Floor", lambda state: state.has("Power Star", player, star_costs["SecondFloorDoorCost"]))
     connect_regions(world, player, "Third Floor", sm64courses[temp_assign[14]], rf.build_rule("LG/TJ/SF/BF/WK")) # TTC
     connect_regions(world, player, "Third Floor", sm64courses[temp_assign[15]], rf.build_rule("TJ/SF/BF")) # RR
     connect_regions(world, player, "Third Floor", sm64courses[temp_assign[23]], rf.build_rule("TJ/SF/BF")) # WMOTR
-    connect_regions(world, player, "Third Floor", "Bowser in the Sky", lambda state: state.has("Power Star", player, world.StarsToFinish[player].value)) # BITS
+    connect_regions(world, player, "Third Floor", "Bowser in the Sky", lambda state: state.has("Power Star", player, star_costs["StarsToFinish"])) # BITS
 
     # Course Rules
     # Bob-omb Battlefield
@@ -184,10 +184,10 @@ def set_rules(world, player: int, area_connections):
     add_rule(world.get_location("Toad (Second Floor)", player), lambda state: state.can_reach("Second Floor", 'Region', player) and state.has("Power Star", player, 25))
     add_rule(world.get_location("Toad (Third Floor)", player), lambda state: state.can_reach("Third Floor", 'Region', player) and state.has("Power Star", player, 35))
 
-    if world.MIPS1Cost[player].value > world.MIPS2Cost[player].value:
-        (world.MIPS2Cost[player].value, world.MIPS1Cost[player].value) = (world.MIPS1Cost[player].value, world.MIPS2Cost[player].value)
-    add_rule(world.get_location("MIPS 1", player), lambda state: state.can_reach("Basement", 'Region', player) and state.has("Power Star", player, world.MIPS1Cost[player].value))
-    add_rule(world.get_location("MIPS 2", player), lambda state: state.can_reach("Basement", 'Region', player) and state.has("Power Star", player, world.MIPS2Cost[player].value))
+    if star_costs["MIPS1Cost"] > star_costs["MIPS2Cost"]:
+        (star_costs["MIPS2Cost"], star_costs["MIPS1Cost"]) = (star_costs["MIPS1Cost"], star_costs["MIPS2Cost"])
+    add_rule(world.get_location("MIPS 1", player), lambda state: state.can_reach("Basement", 'Region', player) and state.has("Power Star", player, star_costs["MIPS1Cost"]))
+    add_rule(world.get_location("MIPS 2", player), lambda state: state.can_reach("Basement", 'Region', player) and state.has("Power Star", player, star_costs["MIPS2Cost"]))
 
     world.completion_condition[player] = lambda state: state.can_reach("BitS: Top", 'Region', player)
 
