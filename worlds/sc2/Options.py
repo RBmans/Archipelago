@@ -68,6 +68,7 @@ class MissionOrder(Choice):
     Mini Gauntlet (4): Linear series of 4 random missions to complete the campaign.
     Tiny Grid (4): A 2x2 version of Grid.  Complete the bottom-right mission to win.
     Grid (variable): A grid that will resize to use all non-excluded missions.  Corners may be omitted to make the grid more square.  Complete the bottom-right mission to win.
+    Golden Path (variable): A single chain of required missions along with several optional chains.  Complete optional missions to unlock more of the golden path.
     """
     display_name = "Mission Order"
     option_vanilla = 0
@@ -80,6 +81,7 @@ class MissionOrder(Choice):
     option_mini_gauntlet = 7
     option_tiny_grid = 8
     option_grid = 9
+    option_golden_path = 10
 
 
 class MaximumCampaignSize(Range):
@@ -736,7 +738,7 @@ class MasteryLocations(LocationInclusion):
 
 class MineralsPerItem(Range):
     """
-    Configures how many minerals are given per resource item.
+    Configures how many minerals per resource item are given.
     """
     display_name = "Minerals Per Item"
     range_start = 0
@@ -746,7 +748,7 @@ class MineralsPerItem(Range):
 
 class VespenePerItem(Range):
     """
-    Configures how much vespene gas is given per resource item.
+    Configures how many vespene per resource item is given.
     """
     display_name = "Vespene Per Item"
     range_start = 0
@@ -756,7 +758,7 @@ class VespenePerItem(Range):
 
 class StartingSupplyPerItem(Range):
     """
-    Configures how much starting supply per is given per item.
+    Configures how many starting supply per item is given.
     """
     display_name = "Starting Supply Per Item"
     range_start = 0
@@ -883,10 +885,8 @@ def get_excluded_missions(multiworld: MultiWorld, player: int) -> Set[SC2Mission
                     )
             )
     ):
-        excluded_missions = excluded_missions.union(
-            [mission for mission in SC2Mission if
-             mission.pool == MissionPools.VERY_HARD and mission.campaign != SC2Campaign.EPILOGUE]
-        )
+        excluded_missions.union([mission for mission in SC2Mission if
+                                 mission.pool == MissionPools.VERY_HARD and mission.campaign != SC2Campaign.EPILOGUE])
     # Omitting No-Build missions if not shuffling no-build
     if not shuffle_no_build:
         excluded_missions = excluded_missions.union(get_no_build_missions())

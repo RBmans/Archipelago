@@ -205,7 +205,7 @@ def copy_item(item: Item):
 
 def num_missions(multiworld: MultiWorld, player: int) -> int:
     mission_order_type = get_option_value(multiworld, player, "mission_order")
-    if mission_order_type != MissionOrder.option_grid:
+    if mission_order_type not in (MissionOrder.option_grid, MissionOrder.option_golden_path):
         mission_order = mission_orders[mission_order_type]()
         misssions = [mission for campaign in mission_order for mission in mission_order[campaign]]
         return len(misssions) - 1  # Menu
