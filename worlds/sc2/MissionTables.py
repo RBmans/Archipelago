@@ -202,6 +202,7 @@ class FillMission(NamedTuple):
     completion_critical: bool = False  # missions needed to beat game
     or_requirements: bool = False  # true if the requirements should be or-ed instead of and-ed
     removal_priority: int = 0  # how many missions missing from the pool required to remove this mission
+    ui_vertical_padding: int = 0
 
 
 

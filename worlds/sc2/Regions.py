@@ -410,7 +410,8 @@ def make_dynamic_mission_order(
             self.counter = 0
             self.last_mission_in_chain = [0]
             self.chain_names = [first_mission.category]
-            self.missions_remaining  = missions_remaining
+            self.missions_remaining = missions_remaining
+            self.padding = 0
 
         def add_mission(self, chain: int, difficulty: int, required_missions: int = 0):
             if self.missions_remaining == 0 and difficulty is not MissionPools.FINAL:
@@ -419,7 +420,12 @@ def make_dynamic_mission_order(
             if self.mission_order[self.last_mission_in_chain[chain]].number == required_missions or required_missions <= 1:
                 required_missions = 0
             mission_connections = [MissionConnection(self.last_mission_in_chain[chain], SC2Campaign.GLOBAL)]
-            if self.last_mission_in_chain[chain] != self.last_mission_in_chain[0]:
+            padding = 0
+            if self.last_mission_in_chain[chain] == self.last_mission_in_chain[0]:
+                # Adding padding to the start of new chains
+                if chain != 0:
+                    padding = self.padding
+            else:
                 # Requiring main chain progress for optional chains
                 mission_connections.append(MissionConnection(self.last_mission_in_chain[0], SC2Campaign.GLOBAL))
             self.mission_order.append(FillMission(
@@ -427,9 +433,12 @@ def make_dynamic_mission_order(
                 mission_connections,
                 self.chain_names[chain],
                 number=required_missions,
-                completion_critical=chain == 0
+                completion_critical=chain == 0,
+                ui_vertical_padding=padding
             ))
             self.last_mission_in_chain[chain] = self.counter
+            if chain == 0:
+                self.padding += 1
             self.missions_remaining -= 1
 
     campaign = Campaign(first_mission, num_missions - 2)
@@ -671,7 +680,8 @@ def create_structured_regions(
                 mission.slot, connections, mission_order[campaign][i].category,
                 number=mission_order[campaign][i].number,
                 completion_critical=mission_order[campaign][i].completion_critical,
-                or_requirements=mission_order[campaign][i].or_requirements)})
+                or_requirements=mission_order[campaign][i].or_requirements,
+                ui_vertical_padding=mission_order[campaign][i].ui_vertical_padding)})
 
     final_mission_id = final_mission.id
     # Changing the completion condition for alternate final missions into an event
