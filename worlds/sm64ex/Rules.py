@@ -181,8 +181,8 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     rf.assign_rule("TTC: Stomp on the Thwomp", "LG & TJ/SF/BF")
     rf.assign_rule("TTC: Stop Time for Red Coins", "NAR | {TTC: Lower}")
     # Rainbow Ride
-    rf.assign_rule("RR: Maze", "WK | LJ & SF/BF/TJ | MOVELESS & LG/TJ")
-    rf.assign_rule("RR: Bob-omb Buddy", "WK | MOVELESS & LG")
+    rf.assign_rule("RR: Maze", "WK | LJ & SF/BF/TJ | MOVELESS & LG/TJ/KK")
+    rf.assign_rule("RR: Bob-omb Buddy", "WK | MOVELESS & LG/KK")
     rf.assign_rule("RR: Swingin' in the Breeze", "LG/TJ/BF/SF | MOVELESS")
     rf.assign_rule("RR: Tricky Triangles!", "LG/TJ/BF/SF | MOVELESS")
     rf.assign_rule("RR: Cruiser", "WK/SF/BF/LG/TJ")
