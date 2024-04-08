@@ -166,7 +166,7 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     rf.assign_rule("WDW: Quick Race Through Downtown!", "VC & WK/BF/SF | VC & TJ+LG | MOVELESS & VC & TJ")
     rf.assign_rule("WDW: Bob-omb Buddy", "TJ | SF+LG | NAR & BF/SF")
     # Tall, Tall Mountain
-    rf.assign_rule("TTM: Top", "MOVELESS & TJ | LJ/DV & LG/KK | MOVELESS & WK & SF/LG | MOVELESS & KK/DV")
+    rf.assign_rule("TTM: Top", "MOVELESS & TJ | LJ/DV & LG/KK | MOVELESS & WK & SF/LG | MOVELESS & KK/DV/LG")
     rf.assign_rule("TTM: Blast to the Lonely Mushroom", "CANN | CANNLESS & LJ | MOVELESS & CANNLESS")
     # Tiny-Huge Island
     rf.assign_rule("THI: 1Up Block THI Small near Start", "NAR | {THI: Pipes}")
