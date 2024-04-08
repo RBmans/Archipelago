@@ -172,7 +172,7 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     rf.assign_rule("THI: 1Up Block THI Small near Start", "NAR | {THI: Pipes}")
     rf.assign_rule("THI: Pipes", "NAR | LJ/TJ/DV/LG | MOVELESS & BF/SF/KK")
     rf.assign_rule("THI: Large Top", "NAR | LJ/TJ/DV | MOVELESS")
-    rf.assign_rule("THI: Wiggler's Red Coins", "WK")
+    rf.assign_rule("THI: Wiggler's Red Coins", "WK | LJ+LG | CL & SF/TJ/LG | MOVELESS & TJ+DV")
     rf.assign_rule("THI: Make Wiggler Squirm", "GP | MOVELESS & DV")
     # Tick Tock Clock
     rf.assign_rule("TTC: Lower", "LG/TJ/SF/BF/WK")
