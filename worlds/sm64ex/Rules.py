@@ -140,7 +140,7 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     # Haze Maze Cave
     rf.assign_rule("HMC: Red Coin Area", "CL & WK/LG/BF/SF/TJ | MOVELESS & WK")
     rf.assign_rule("HMC: Pit Islands", "TJ+CL | MOVELESS & WK & TJ/LJ | MOVELESS & WK+SF+LG")
-    rf.assign_rule("HMC: Metal-Head Mario Can Move!", "LJ+MC | CAPLESS & LJ+TJ | CAPLESS & MOVELESS & LJ/TJ/WK")
+    rf.assign_rule("HMC: Metal-Head Mario Can Move!", "LJ+MC | CAPLESS & LJ+TJ | CAPLESS & MOVELESS & LJ/TJ/WK/DV")
     rf.assign_rule("HMC: Navigating the Toxic Maze", "WK/SF/BF/TJ")
     rf.assign_rule("HMC: Watch for Rolling Rocks", "WK")
     # Lethal Lava Land
