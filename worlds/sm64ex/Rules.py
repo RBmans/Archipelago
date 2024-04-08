@@ -148,7 +148,7 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     rf.assign_rule("LLL: Hot-Foot-It into the Volcano", "WK & MOVELESS")
     rf.assign_rule("LLL: Elevator Tour in the Volcano", "WK & LJ & MOVELESS")
     # Shifting Sand Land
-    rf.assign_rule("SSL: Upper Pyramid", "CL & TJ/BF/SF/LG | MOVELESS")
+    rf.assign_rule("SSL: Upper Pyramid", "CL & TJ/BF/SF/LG/WK | MOVELESS")
     rf.assign_rule("SSL: Stand Tall on the Four Pillars", "TJ+WC+GP | CANN+WC+GP | TJ/SF/BF & CAPLESS | MOVELESS")
     rf.assign_rule("SSL: Free Flying for 8 Red Coins", "TJ+WC | CANN+WC | TJ/SF/BF & CAPLESS | MOVELESS & CAPLESS")
     # Dire, Dire Docks
