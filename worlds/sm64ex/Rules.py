@@ -160,10 +160,10 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     rf.assign_rule("SL: In the Deep Freeze", "WK/SF/LG/BF/CANN/TJ")
     rf.assign_rule("SL: Into the Igloo", "VC & TJ/SF/BF/WK/LG | MOVELESS & VC")
     # Wet-Dry World
-    rf.assign_rule("WDW: Top", "WK/TJ/SF/BF | MOVELESS")
-    rf.assign_rule("WDW: Downtown", "NAR & LG & TJ/SF/BF | CANN | MOVELESS & TJ+DV")
+    rf.assign_rule("WDW: Top", "WK/TJ/SF/BF/LJ | MOVELESS")
+    rf.assign_rule("WDW: Downtown", "NAR & LG & TJ/SF/BF | CANN | MOVELESS & TJ/DV")
     rf.assign_rule("WDW: Go to Town for Red Coins", "WK | MOVELESS & TJ")
-    rf.assign_rule("WDW: Quick Race Through Downtown!", "VC & WK/BF | VC & TJ+LG | MOVELESS & VC & TJ")
+    rf.assign_rule("WDW: Quick Race Through Downtown!", "VC & WK/BF/SF | VC & TJ+LG | MOVELESS & VC & TJ")
     rf.assign_rule("WDW: Bob-omb Buddy", "TJ | SF+LG | NAR & BF/SF")
     # Tall, Tall Mountain
     rf.assign_rule("TTM: Top", "MOVELESS & TJ | LJ/DV & LG/KK | MOVELESS & WK & SF/LG | MOVELESS & KK/DV")
