@@ -134,7 +134,6 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     # Big Boo's Haunt
     rf.assign_rule("BBH: Third Floor", "WK+LG | MOVELESS & WK")
     rf.assign_rule("BBH: Roof", "LJ | MOVELESS")
-    rf.assign_rule("BBH: Secret of the Haunted Books", "KK | MOVELESS")
     rf.assign_rule("BBH: Seek the 8 Red Coins", "BF/WK/TJ/SF")
     rf.assign_rule("BBH: Eye to Eye in the Secret Room", "VC")
     # Haze Maze Cave
