@@ -125,7 +125,7 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     rf.assign_rule("WF: Fall onto the Caged Island", "CL & {WF: Tower} | MOVELESS & TJ | MOVELESS & LJ | MOVELESS & CANN")
     rf.assign_rule("WF: Blast Away the Wall", "CANN | CANNLESS & LG")
     # Jolly Roger Bay
-    rf.assign_rule("JRB: Upper", "TJ/BF/SF/WK | MOVELESS & LG")
+    rf.assign_rule("JRB: Upper", "TJ/BF/SF/WK/CANN | MOVELESS & LG")
     rf.assign_rule("JRB: Red Coins on the Ship Afloat", "CL/CANN/TJ | MOVELESS & BF/WK")
     rf.assign_rule("JRB: Blast to the Stone Pillar", "CANN+CL | CANNLESS & MOVELESS | CANN & MOVELESS")
     rf.assign_rule("JRB: Through the Jet Stream", "MC | CAPLESS")
