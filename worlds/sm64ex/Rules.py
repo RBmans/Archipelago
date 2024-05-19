@@ -115,7 +115,8 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
 
     # Course Rules
     # Bob-omb Battlefield
-    rf.assign_rule("BoB: Island", "CANN | CANNLESS & WC & TJ | CAPLESS & CANNLESS & LJ")
+    rf.assign_rule("BoB: Shoot to the Island in the Sky", "CANN | WC & TJ | CAPLESS & CANNLESS & LJ")
+    rf.assign_rule("BoB: Find the 8 Red Coins", "CANN | WC & TJ | CANNLESS & CAPLESS & LJ & SF/BF/TJ/CL")
     rf.assign_rule("BoB: Mario Wings to the Sky",  "CANN & WC | CAPLESS & CANN")
     rf.assign_rule("BoB: Behind Chain Chomp's Gate", "GP | MOVELESS")
     # Whomp's Fortress
