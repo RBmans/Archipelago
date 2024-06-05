@@ -108,9 +108,9 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
 
     connect_regions(world, player, "Second Floor", "Third Floor", lambda state: state.has("Power Star", player, star_costs["SecondFloorDoorCost"]))
 
-    connect_regions(world, player, "Third Floor", randomized_entrances_s["Tick Tock Clock"], rf.build_rule("LG/TJ/SF/BF/WK"))
-    connect_regions(world, player, "Third Floor", randomized_entrances_s["Rainbow Ride"], rf.build_rule("TJ/SF/BF"))
-    connect_regions(world, player, "Third Floor", randomized_entrances_s["Wing Mario over the Rainbow"], rf.build_rule("TJ/SF/BF"))
+    connect_regions(world, player, "Third Floor", randomized_entrances_s["Tick Tock Clock"], rf.build_rule("LG/TJ/SF/BF/MOVELESS & WK"))
+    connect_regions(world, player, "Third Floor", randomized_entrances_s["Rainbow Ride"], rf.build_rule("TJ/SF/BF/WK"))
+    connect_regions(world, player, "Third Floor", randomized_entrances_s["Wing Mario over the Rainbow"], rf.build_rule("TJ/SF/BF/WK"))
     connect_regions(world, player, "Third Floor", "Bowser in the Sky", lambda state: state.has("Power Star", player, star_costs["StarsToFinish"]))
 
     # Course Rules
