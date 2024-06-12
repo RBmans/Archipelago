@@ -196,8 +196,8 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     rf.assign_rule("Vanish Cap Under the Moat Red Coins", "TJ/BF/SF/LG/WK & VC | CAPLESS & WK")
     # Bowser in the Fire Sea
     rf.assign_rule("BitFS: Upper", "CL | MOVELESS & TJ+WK")
-    rf.assign_rule("Bowser in the Fire Sea Red Coins", "LG/WK")
-    rf.assign_rule("Bowser in the Fire Sea 1Up Block Near Poles", "LG/WK")
+    rf.assign_rule("Bowser in the Fire Sea Red Coins", "LG/WK | MOVELESS")
+    rf.assign_rule("Bowser in the Fire Sea 1Up Block Near Poles", "LG/WK | MOVELESS")
     # Wing Mario Over the Rainbow
     rf.assign_rule("Wing Mario Over the Rainbow Red Coins", "TJ+WC")
     rf.assign_rule("Wing Mario Over the Rainbow 1Up Block", "TJ+WC")
