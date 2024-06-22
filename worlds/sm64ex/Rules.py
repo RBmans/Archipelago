@@ -158,7 +158,7 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     rf.assign_rule("DDD: Collect the Caps...", "VC+MC | CAPLESS & VC")
     # Snowman's Land
     rf.assign_rule("SL: Snowman's Big Head", "BF/SF/CANN/TJ")
-    rf.assign_rule("SL: In the Deep Freeze", "WK/SF/LG/BF/CANN/TJ")
+    rf.assign_rule("SL: In the Deep Freeze", "WK/SF/LG/BF/CANN/TJ | MOVELESS")
     rf.assign_rule("SL: Into the Igloo", "VC & TJ/SF/BF/WK/LG | MOVELESS & VC")
     # Wet-Dry World
     rf.assign_rule("WDW: Top", "WK/TJ/SF/BF/LJ | MOVELESS")
