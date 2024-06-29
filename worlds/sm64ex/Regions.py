@@ -189,9 +189,8 @@ def create_regions(world: MultiWorld, options: SM64Options, player: int):
         create_locs(regSL, "SL: 100 Coins")
 
     regWDW = create_region("Wet-Dry World", player, world)
-    create_locs(regWDW, "WDW: Express Elevator--Hurry Up!")
-    wdw_top = create_subregion(regWDW, "WDW: Top", "WDW: Shocking Arrow Lifts!", "WDW: Top o' the Town",
-                                                   "WDW: Secrets in the Shallows & Sky", "WDW: Bob-omb Buddy")
+    create_locs(regWDW, "WDW: Express Elevator--Hurry Up!", "WDW: Shocking Arrow Lifts!")
+    wdw_top = create_subregion(regWDW, "WDW: Top", "WDW: Top o' the Town", "WDW: Secrets in the Shallows & Sky", "WDW: Bob-omb Buddy")
     wdw_downtown = create_subregion(regWDW, "WDW: Downtown", "WDW: Go to Town for Red Coins", "WDW: Quick Race Through Downtown!", "WDW: 1Up Block in Downtown")
     regWDW.subregions = [wdw_top, wdw_downtown]
     if options.enable_coin_stars:
