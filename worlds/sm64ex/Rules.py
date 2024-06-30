@@ -133,7 +133,7 @@ def set_rules(world, options: SM64Options, player: int, area_connections: dict, 
     # Cool, Cool Mountain
     rf.assign_rule("CCM: Wall Kicks Will Work", "TJ/WK & CANN | CANNLESS & TJ/WK | MOVELESS")
     # Big Boo's Haunt
-    rf.assign_rule("BBH: Third Floor", "WK+LG | MOVELESS & WK")
+    rf.assign_rule("BBH: Third Floor", "WK")
     rf.assign_rule("BBH: Roof", "LJ | MOVELESS")
     rf.assign_rule("BBH: Seek the 8 Red Coins", "BF/WK/TJ/SF")
     rf.assign_rule("BBH: Eye to Eye in the Secret Room", "VC")
